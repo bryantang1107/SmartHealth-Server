@@ -1,0 +1,34 @@
+GET http://localhost:6100/authroom
+
+
+###
+POST http://localhost:6100/authroom/register
+Content-Type: application/json
+
+{
+    "room_id": "bryanz",
+    "password": "password"
+}
+
+###
+POST http://localhost:6100/authroom/login
+Content-Type: application/json
+
+{
+    
+    "room_id": "bdryan",
+    "password": "password"
+}
+
+###
+POST http://localhost:6100/find-doctor/
+
+###
+GET http://localhost:6100/find-doctor/
+
+###
+GET http://localhost:6100/find-doctor/625664103da855c21878e2c0
+
+###
+POST http://localhost:6100/login/
+

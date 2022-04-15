@@ -4,6 +4,8 @@ import "dotenv/config";
 import jwt from "jsonwebtoken";
 import authenticateToken from "../middleware/authenticateToken.js";
 import User from "../models/user.js";
+import doctor from "../models/doctor.js";
+import checkRole from "../controller/checkRole.js";
 
 router.get("/", authenticateToken, async (req, res) => {
   const id = req.user.uid;
@@ -11,6 +13,11 @@ router.get("/", authenticateToken, async (req, res) => {
   const result = await getUser(id);
   const accessToken = generateToken(id);
   res.json({ accessToken, result }); //return access token and user info
+});
+
+router.get("/userRole/:id", async (req, res) => {
+  const role = await checkRole(req.params.id);
+  res.send(role);
 });
 
 const generateToken = (user) => {

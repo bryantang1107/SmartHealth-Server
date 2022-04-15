@@ -159,7 +159,7 @@ app.use("/login", login);
 
 app.use("/authroom", chat);
 
-//app.use(authenticateJWT);
+app.use(authenticateJWT);
 app.get("/check", (req, res) => {
   res.send(true);
 });

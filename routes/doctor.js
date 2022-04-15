@@ -19,6 +19,7 @@ router.get("/:id", getDoctor, (req, res) => {
 router.post("/", async (req, res) => {
   doctor.map((data) => {
     const {
+      _id,
       name,
       image,
       category,
@@ -34,6 +35,7 @@ router.post("/", async (req, res) => {
       service,
     } = data;
     const doctorData = new Doctor({
+      _id,
       name,
       image,
       category,

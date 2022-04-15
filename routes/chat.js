@@ -48,6 +48,15 @@ router.post("/register", async (req, res) => {
     });
 
     await userAppointment.save();
+
+    await doctor.findOneAndUpdate(
+      {
+        _id: doctorInfo,
+      },
+      {
+        $push: { patientInfo: userId },
+      }
+    );
     res.status(200).send(true);
   } catch (error) {
     res.status(500).send("Invalid");
@@ -57,7 +66,9 @@ router.get("/getRoomInfo/:id", async (req, res) => {
   const userId = req.params.id;
   let user;
   let roomCreds;
+  let doctorInfo;
   try {
+    //check if user or doctor made req
     user = await Appointment.findById(userId);
     if (user === null) {
       return res.status(401).json({
@@ -69,6 +80,7 @@ router.get("/getRoomInfo/:id", async (req, res) => {
     if (roomCreds === null) {
       res.status(500).json({ message: "Server Error" });
     }
+
     res.status(200).send(roomCreds);
   } catch (err) {
     res.sendStatus(500);

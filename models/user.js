@@ -5,7 +5,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-
+  reminder: {
+    type: Array,
+  },
 });
 
 export default mongoose.model("user", userSchema);

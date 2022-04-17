@@ -16,6 +16,7 @@ import morgan from "morgan";
 import moment from "moment-timezone";
 import { deleteFile } from "./accessLog.js";
 import mongoose from "mongoose";
+import userRoute from "./routes/user.js";
 
 import fs from "fs";
 import { dirname } from "path";
@@ -156,9 +157,9 @@ const accessLogStream = fs.createWriteStream(
 );
 app.use(morgan("myformat", { stream: accessLogStream }));
 app.use("/login", login);
-
+app.use("/user", userRoute);
 app.use("/authroom", chat);
-
+app.use("/reminder", reminder);
 app.use(authenticateJWT);
 app.get("/check", (req, res) => {
   res.send(true);
@@ -166,7 +167,7 @@ app.get("/check", (req, res) => {
 
 app.use("/covid", router);
 app.use("/find-doctor", doctorRoute);
-app.use("/reminder", reminder);
+
 app.use("/pharmacy", pharmacy);
 
 server.listen(process.env.PORT, () => {

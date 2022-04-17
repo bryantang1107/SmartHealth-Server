@@ -4,7 +4,6 @@ import "dotenv/config";
 import jwt from "jsonwebtoken";
 import authenticateToken from "../middleware/authenticateToken.js";
 import User from "../models/user.js";
-import doctor from "../models/doctor.js";
 import checkRole from "../controller/checkRole.js";
 
 router.get("/", authenticateToken, async (req, res) => {

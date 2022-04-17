@@ -2,15 +2,33 @@ import express from "express";
 const router = express.Router();
 import schedule from "node-schedule";
 import userModel from "../models/user.js";
+import reminderModel from "../models/reminder.js";
 
 import "dotenv/config";
 
-router.get("/", (req, res) => {
-  //date & time
-  // const someDate = new Date("2022-02-26T09:29:00Z");
-  // schedule.scheduleJob(someDate, () => {
-  //   console.log("Job ran at", new Date().toString());
-  // }); //name of job, date to trigger, callback (action for the job)
+router.post("/email-reminder", async (req, res) => {
+  try {
+    const reminder = await new reminderModel({
+      _id: req.body.userData,
+      email: req.body.email,
+    });
+    await reminder.save();
+    res.status(200).send("Email Received");
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+router.get("/email-reminder/:id", async (req, res) => {
+  let user;
+  try {
+    user = await reminderModel.findById(req.params.id);
+    if (user === null) {
+      return res.status(200).send(false);
+    }
+    return res.status(200).send(true);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 router.get("/get-reminder/:id", async (req, res) => {
@@ -22,6 +40,15 @@ router.get("/get-reminder/:id", async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+  }
+});
+router.delete("/cancel-email-reminder", async (req, res) => {
+  //delete from db
+  try {
+    await reminderModel.findByIdAndDelete(req.body.userData);
+    res.status(202).send("Deleted Succesfully");
+  } catch (error) {
+    res.status(500).send("Internal Server Errror");
   }
 });
 
@@ -53,12 +80,6 @@ router.delete("/:index", async (req, res) => {
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
-});
-
-router.get("/cancel-reminder", (req, res) => {
-  schedule.cancelJob("job_name"); //cancel job
-
-  //delete from db
 });
 
 export default router;

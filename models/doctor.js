@@ -60,6 +60,12 @@ const doctorSchema = new mongoose.Schema({
   patientInfo: {
     type: Array,
   },
+  timeSlot: [
+    {
+      date: String,
+      time: { type: String, unique: true },
+    },
+  ],
 });
 
 export default mongoose.model("doctors", doctorSchema);

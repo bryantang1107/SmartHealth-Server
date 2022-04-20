@@ -30,18 +30,18 @@ export const makeReminder = () => {
   //*/5 * * * * * --> is for every 5 second
 
   const scheduleJob = async (content) => {
-    const emailData = await getUserEmail();
-    const emailArray = Array.from(emailData);
+    schedule.scheduleJob("job_name", "0 0 * * *", async () => {
+      const emailData = await getUserEmail();
+      const emailArray = Array.from(emailData);
 
-    emailArray.forEach((email) => {
-      const options = {
-        from: "smarthealthorg11222@hotmail.com",
-        to: email, //to user's email address for reminder
-        subject: "A Reminder From Smart Health 🏥", //get data from db
+      emailArray.forEach((email) => {
+        const options = {
+          from: "smarthealthorg11222@hotmail.com",
+          to: email, //to user's email address for reminder
+          subject: "A Reminder From Smart Health 🏥", //get data from db
 
-        html: "Description test" + content,
-      };
-      schedule.scheduleJob("job_name", "0 0 * * *", () => {
+          html: "Description test" + content,
+        };
         smtpTransport.sendMail(options, (err, data) => {
           if (err) {
             console.log(err);

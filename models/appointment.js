@@ -22,8 +22,11 @@ const appointmentSchema = mongoose.Schema({
   symptoms: {
     type: String,
   },
+  time: {
+    type: String,
+  },
   date: {
-    type: Date,
+    type: String,
   },
   doctorInfo: {
     type: String,

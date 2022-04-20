@@ -11,6 +11,37 @@ import bcrypt from "bcrypt";
 import doctor from "../models/doctor.js";
 import room from "../models/room.js";
 
+const storeTimeSlot = async (id, time, date) => {
+  const slot = { date, time: time };
+  console.log(slot);
+  let exist;
+  const doctorData = await doctor.findOne({
+    _id: id,
+  });
+  if (doctorData.timeSlot.length > 0) {
+    doctorData.timeSlot.forEach((x) => {
+      if (x.date === date && x.time === time) {
+        exist = true;
+        return;
+      } else {
+        doctorData.timeSlot.push(slot);
+
+        exist = false;
+        return;
+      }
+    });
+    console.log(doctorData);
+    await doctorData.save();
+  } else {
+    doctorData.timeSlot.push(slot);
+
+    console.log(doctorData);
+
+    await doctorData.save();
+  }
+  return exist;
+};
+
 router.post("/register", async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -24,8 +55,14 @@ router.post("/register", async (req, res) => {
       symptoms,
       date,
       gender,
+      time,
       doctorInfo,
     } = req.body.userInfo;
+
+    const exist = await storeTimeSlot(doctorInfo, time, date);
+    if (exist) {
+      return res.status(404).send("Slot Taken");
+    }
 
     const roomCredentials = new room({
       room_id: req.body.room_id,
@@ -44,6 +81,7 @@ router.post("/register", async (req, res) => {
       symptoms,
       date,
       doctorInfo,
+      time,
       roomInfo: roomId._id,
     });
 
@@ -54,11 +92,13 @@ router.post("/register", async (req, res) => {
         _id: doctorInfo,
       },
       {
-        $push: { patientInfo: userId },
+        $push: { patientInfo: { userId } },
       }
     );
+
     res.status(200).send(true);
   } catch (error) {
+    console.log(error);
     res.status(500).send("Invalid");
   }
 });

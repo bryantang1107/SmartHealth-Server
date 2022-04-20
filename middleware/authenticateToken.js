@@ -2,6 +2,7 @@ import admin from "../firebase.js";
 import jwt from "jsonwebtoken";
 export default async function authenticateToken(req, res, next) {
   //get token, comes from header (Bearer)
+  //firebase token authentication 
 
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -12,7 +13,7 @@ export default async function authenticateToken(req, res, next) {
   try {
     const decodeValue = await admin.auth().verifyIdToken(token);
     if (decodeValue) {
-      req.user = decodeValue; //can use the uid to store user info in db
+      req.user = decodeValue; 
       return next();
     }
     return res.json({ message: "Unauthorized" });

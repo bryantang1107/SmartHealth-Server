@@ -16,6 +16,12 @@ router.get("/:id", getDoctor, (req, res) => {
   res.status(200).json(res.doctorData);
 });
 
+router.get("/time/:id", getDoctor, (req, res) => {
+  const timeSlot = res.doctorData.timeSlot;
+
+  res.status(200).json(timeSlot);
+});
+
 router.post("/", async (req, res) => {
   doctor.map((data) => {
     const {

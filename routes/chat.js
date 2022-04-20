@@ -14,7 +14,7 @@ import room from "../models/room.js";
 const storeTimeSlot = async (id, time, date) => {
   const slot = { date, time: time };
   console.log(slot);
-  let exist;
+  let exist = false;
   const doctorData = await doctor.findOne({
     _id: id,
   });
@@ -22,14 +22,11 @@ const storeTimeSlot = async (id, time, date) => {
     doctorData.timeSlot.forEach((x) => {
       if (x.date === date && x.time === time) {
         exist = true;
-        return;
-      } else {
-        doctorData.timeSlot.push(slot);
-
-        exist = false;
-        return;
       }
     });
+    if (exist) return exist;
+    exist = false;
+    doctorData.timeSlot.push(slot);
     console.log(doctorData);
     await doctorData.save();
   } else {

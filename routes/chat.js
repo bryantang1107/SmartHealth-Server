@@ -99,13 +99,26 @@ router.post("/register", async (req, res) => {
     res.status(500).send("Invalid");
   }
 });
+router.get("/getRoomInfoDoctor/:id", async (req, res) => {
+  const roomId = req.params.id;
+  let roomCreds;
+  try {
+    roomCreds = await room.findById(roomId);
+    if (roomCreds === null) {
+      return res.status(500).json({ message: "Server Error" });
+    }
+
+    res.status(200).send(roomCreds);
+  } catch (err) {
+    res.sendStatus(500);
+  }
+});
+
 router.get("/getRoomInfo/:id", async (req, res) => {
   const userId = req.params.id;
   let user;
   let roomCreds;
-  let doctorInfo;
   try {
-    //check if user or doctor made req
     user = await Appointment.findById(userId);
     if (user === null) {
       return res.status(401).json({
@@ -115,7 +128,7 @@ router.get("/getRoomInfo/:id", async (req, res) => {
     const roomInfo = user.roomInfo;
     roomCreds = await room.findById(roomInfo);
     if (roomCreds === null) {
-      res.status(500).json({ message: "Server Error" });
+      return res.status(500).json({ message: "Server Error" });
     }
 
     res.status(200).send(roomCreds);

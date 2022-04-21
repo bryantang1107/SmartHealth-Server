@@ -17,6 +17,7 @@ import moment from "moment-timezone";
 import { deleteFile } from "./accessLog.js";
 import mongoose from "mongoose";
 import userRoute from "./routes/user.js";
+import appointmentRoute from "./routes/appointment.js";
 
 import fs from "fs";
 import { dirname } from "path";
@@ -160,6 +161,7 @@ app.use("/login", login);
 app.use("/user", userRoute);
 app.use("/authroom", chat);
 app.use("/reminder", reminder);
+app.use("/appointment", appointmentRoute);
 app.use(authenticateJWT);
 app.get("/check", (req, res) => {
   res.send(true);

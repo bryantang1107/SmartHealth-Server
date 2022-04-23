@@ -1,6 +1,7 @@
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 import Appointment from "../models/appointment.js";
+import activityModal from "../models/activity.js";
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
@@ -37,6 +38,24 @@ const storeTimeSlot = async (id, time, date) => {
     await doctorData.save();
   }
   return exist;
+};
+const formatDate = (date) => {
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  let ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? "0" + minutes : minutes;
+  let strTime = hours + ":" + minutes + " " + ampm;
+  return (
+    date.getDate() +
+    "/" +
+    (date.getMonth() + 1) +
+    "/" +
+    date.getFullYear() +
+    "  " +
+    strTime
+  );
 };
 
 router.post("/register", async (req, res) => {
@@ -92,6 +111,16 @@ router.post("/register", async (req, res) => {
         $push: { patientInfo: { userId } },
       }
     );
+    const newDate = formatDate(new Date(date));
+    const activity = await new activityModal({
+      doctorId: doctorInfo,
+      activityName: "New Appointment",
+      sender: name,
+      type: "appointment",
+      email: email,
+      message: `You have a new appointment scheduled with ${name} at ${newDate}`,
+    });
+    await activity.save();
 
     res.status(200).send(true);
   } catch (error) {

@@ -1,6 +1,5 @@
 import express from "express";
 const router = express.Router();
-import schedule from "node-schedule";
 import userModel from "../models/user.js";
 import reminderModel from "../models/reminder.js";
 
@@ -38,6 +37,7 @@ router.get("/get-reminder/:id", async (req, res) => {
     if (user) {
       return res.status(200).json(user.reminder);
     }
+    res.status(404).send("No reminder");
   } catch (error) {
     console.log(error);
   }

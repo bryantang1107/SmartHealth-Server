@@ -23,9 +23,10 @@ router.get("/userDoctor/:id", async (req, res) => {
   try {
     doctor = await appointment.findById(req.params.id);
     if (!doctor) return res.status(404).send("no doctor found");
+    console.log(doctor.name);
     const doctorId = doctor.doctorInfo;
     const doctorInfo = await doctorModel.findById(doctorId);
-    res.status(200).send(doctorInfo);
+    res.status(200).send([doctorInfo, doctor.name]);
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");

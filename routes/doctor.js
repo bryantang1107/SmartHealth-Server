@@ -12,6 +12,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+
 router.get("/:id", getDoctor, (req, res) => {
   res.status(200).json(res.doctorData);
 });
@@ -60,6 +61,7 @@ router.post("/", async (req, res) => {
     saveData(doctorData);
   });
 });
+
 
 const saveData = async (doctorData) => {
   try {

@@ -9,6 +9,7 @@ const appointmentSchema = mongoose.Schema({
   },
   email: {
     type: String,
+    trim: true,
   },
   phone: {
     type: String,

@@ -3,6 +3,7 @@ const router = express.Router();
 import AppointmentModal from "../models/appointment.js";
 import roomModal from "../models/room.js";
 import doctorModal from "../models/doctor.js";
+import activityModal from "../models/activity.js";
 
 router.get("/:id", async (req, res) => {
   let appointment;
@@ -41,6 +42,17 @@ router.delete("/:id", async (req, res) => {
       });
       await doctor.save();
     }
+    const activity = await new activityModal({
+      doctorId,
+      activityName: "Appointment Cancellation",
+      type: "cancel",
+      sender: req.body.name,
+      email: req.body.email,
+      reason: req.body.reason,
+      message: ` cancelled the appointment with You.`,
+    });
+    await activity.save();
+
     res.status(200).send("Success");
   } catch (error) {
     res.status(500).send("Internal Server Error");

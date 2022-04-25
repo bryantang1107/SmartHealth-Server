@@ -18,6 +18,42 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.patch("/updateInfo/:id", async (req, res) => {
+  let appointment;
+  try {
+    appointment = await AppointmentModal.findById(req.params.id);
+    if (!appointment) return res.status(404).send("no appointment exist");
+    appointment.name = req.body.name;
+    appointment.phone = req.body.phone;
+    appointment.dob = req.body.dob;
+    appointment.symptoms = req.body.symptoms;
+
+    await appointment.save();
+
+    res.status(200).send("update completed");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.get("/detail/:id", async (req, res) => {
+  let userAppointment;
+
+  try {
+    userAppointment = await AppointmentModal.findById(req.params.id);
+    if (userAppointment !== null) {
+      const doctor = await doctorModal.findById(userAppointment.doctorInfo);
+      return res.status(200).send([userAppointment, doctor]);
+    }
+    return res.status(404).send("No Appointment");
+  } catch (err) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.put("/:id", async (req, res) => {});
+
 router.delete("/:id", async (req, res) => {
   //delete from room
   const id = req.params.id;

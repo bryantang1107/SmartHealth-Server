@@ -1,6 +1,6 @@
 import express from "express";
-import appointment from "../models/appointment.js";
 const router = express.Router();
+import appointment from "../models/appointment.js";
 import doctorModel from "../models/doctor.js";
 import userModel from "../models/user.js";
 
@@ -49,12 +49,7 @@ router.post("/store-medical-record", async (req, res) => {
       },
     ];
     await user.save();
-    const appointmentData = await appointment.findById(req.body.id);
-    appointmentData.complete = true;
-    await appointmentData.save();
-    res.status(200).send(true);
   } catch (error) {
-    console.log(error);
     res.status(500).send("Internal Server Error");
   }
 });

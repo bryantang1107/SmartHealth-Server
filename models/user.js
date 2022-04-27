@@ -11,6 +11,10 @@ const userSchema = new mongoose.Schema({
   medicalRecord: {
     type: Array,
   },
+  complete: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 export default mongoose.model("user", userSchema);

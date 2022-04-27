@@ -11,6 +11,7 @@ const router = express.Router();
 import bcrypt from "bcrypt";
 import doctor from "../models/doctor.js";
 import room from "../models/room.js";
+import userModal from "../models/user.js";
 
 const storeTimeSlot = async (id, time, date) => {
   const slot = { date, time: time };
@@ -122,6 +123,10 @@ router.post("/register", async (req, res) => {
     });
     await activity.save();
 
+    const userComplete = await userModal.findById(userId);
+    userComplete.complete = false;
+    await userComplete.save();
+
     res.status(200).send(true);
   } catch (error) {
     console.log(error);
@@ -187,11 +192,11 @@ router.get("/appointment/:id", async (req, res) => {
   let userAppointment;
 
   try {
-    userAppointment = await Appointment.findById(req.params.id);
-    if (userAppointment !== null) {
-      return res.send(false);
+    userAppointment = await userModal.findById(req.params.id);
+    if (!userAppointment) {
+      return res.status(404).send("No user found");
     }
-    return res.send(true);
+    res.status(200).send(userAppointment.complete);
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
   }

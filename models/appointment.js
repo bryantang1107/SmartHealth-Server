@@ -2,10 +2,6 @@ import mongoose from "mongoose";
 
 const appointmentSchema = mongoose.Schema({
   _id: String,
-  // userInfo: {
-  //   type: Array,
-  // },
-
   name: {
     type: String,
   },
@@ -37,10 +33,6 @@ const appointmentSchema = mongoose.Schema({
   roomInfo: {
     type: String,
     required: true,
-  },
-  complete: {
-    type: Boolean,
-    default: false,
   },
 });
 

@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema({
   reminder: {
     type: Array,
   },
+  medicalRecord: {
+    type: Array,
+  },
 });
 
 export default mongoose.model("user", userSchema);

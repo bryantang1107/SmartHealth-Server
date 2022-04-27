@@ -1,7 +1,8 @@
 import express from "express";
-const router = express.Router();
 import appointment from "../models/appointment.js";
+const router = express.Router();
 import doctorModel from "../models/doctor.js";
+import userModel from "../models/user.js";
 
 //get appointment info
 router.get("/:id", async (req, res) => {
@@ -27,6 +28,31 @@ router.get("/userDoctor/:id", async (req, res) => {
     const doctorId = doctor.doctorInfo;
     const doctorInfo = await doctorModel.findById(doctorId);
     res.status(200).send([doctorInfo, doctor.name]);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.post("/store-medical-record", async (req, res) => {
+  try {
+    const user = await userModel.findById(req.body.id);
+    if (!user) return res.status(404).send("No user Found");
+    user.medicalRecord = [
+      ...user.medicalRecord,
+      {
+        diagnosis: req.body.diagnosis,
+        route: req.body.route,
+        category: req.body.category,
+        prescription: req.body.prescription,
+        drug: req.body.drug,
+      },
+    ];
+    await user.save();
+    const appointmentData = await appointment.findById(req.body.id);
+    appointmentData.complete = true;
+    await appointmentData.save();
+    res.status(200).send(true);
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");

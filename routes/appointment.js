@@ -18,6 +18,21 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.get("/done/:id", async (req, res) => {
+  let appointment;
+  try {
+    appointment = await AppointmentModal.find()
+      .where("doctorInfo")
+      .equals(req.params.id);
+    appointment.complete = true;
+    await appointment.save();
+    res.status(200).send("Appointment Completed");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 router.patch("/updateInfo/:id", async (req, res) => {
   let appointment;
   try {

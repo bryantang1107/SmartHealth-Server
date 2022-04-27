@@ -188,7 +188,6 @@ router.get("/appointment/:id", async (req, res) => {
 
   try {
     userAppointment = await Appointment.findById(req.params.id);
-
     if (userAppointment !== null) {
       return res.send(false);
     }

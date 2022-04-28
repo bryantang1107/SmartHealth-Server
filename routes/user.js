@@ -46,6 +46,7 @@ router.post("/store-medical-record", async (req, res) => {
         category: req.body.category,
         prescription: req.body.prescription,
         drug: req.body.drug,
+        additional: req.body.additional,
       },
     ];
     await user.save();

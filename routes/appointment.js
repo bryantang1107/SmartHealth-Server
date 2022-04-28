@@ -6,6 +6,7 @@ import doctorModal from "../models/doctor.js";
 import activityModal from "../models/activity.js";
 import userModal from "../models/user.js";
 import historyModal from "../models/history.js";
+import doctor from "../models/doctor.js";
 
 router.get("/:id", async (req, res) => {
   let appointment;
@@ -17,6 +18,36 @@ router.get("/:id", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+router.patch("/unavailable/:id", async (req, res) => {
+  const startDate = new Date(req.body.startDate.split("T")[0]);
+  const endDate = new Date(req.body.endDate.split("T")[0]);
+  const dates = [];
+  const date = new Date(startDate.getTime());
+  while (date <= endDate) {
+    dates.push(new Date(date));
+    date.setDate(date.getDate() + 1);
+  }
+  const newdate = dates.map((x) => {
+    return x.toISOString().split("T")[0];
+  });
+  try {
+    const doctorData = await doctorModal.findById(req.params.id);
+    if (doctorData?.unavailable.length < 1) {
+      doctorData.unavailable = newdate;
+    } else {
+      newdate.forEach((x) => {
+        if (doctorData?.unavailable.includes(x)) return;
+        doctorData?.unavailable.push(x);
+      });
+    }
+
+    await doctorData.save();
+    res.status(200).send("Done");
+  } catch (error) {
+    console.log(error);
   }
 });
 
@@ -57,16 +88,7 @@ router.post("/done/:id", async (req, res) => {
       });
       await doctor.save();
     }
-    const activity = await new activityModal({
-      doctorId,
-      activityName: "Appointment Cancellation",
-      type: "cancel",
-      sender: req.body.name,
-      email: req.body.email,
-      reason: req.body.reason,
-      message: ` cancelled the appointment with You.`,
-    });
-    await activity.save();
+
     const user = await userModal.findById(id);
     user.complete = true;
     await user.save();
@@ -74,6 +96,19 @@ router.post("/done/:id", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+router.get("/past-appointment/:id", async (req, res) => {
+  let history;
+  try {
+    history = await historyModal.findById(req.params.id);
+
+    if (!history) return res.status(404).send("No History found");
+
+    res.status(200).send(history);
+  } catch (error) {
+    console.log(error);
   }
 });
 

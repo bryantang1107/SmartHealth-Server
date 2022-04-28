@@ -66,6 +66,9 @@ const doctorSchema = new mongoose.Schema({
       time: { type: String, unique: true },
     },
   ],
+  unavailable: {
+    type: Array,
+  },
 });
 
 export default mongoose.model("doctors", doctorSchema);

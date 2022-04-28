@@ -12,15 +12,14 @@ router.get("/", async (req, res) => {
   }
 });
 
-
 router.get("/:id", getDoctor, (req, res) => {
   res.status(200).json(res.doctorData);
 });
 
 router.get("/time/:id", getDoctor, (req, res) => {
   const timeSlot = res.doctorData.timeSlot;
-
-  res.status(200).json(timeSlot);
+  const unavailable = res.doctorData.unavailable;
+  res.status(200).json([timeSlot, unavailable]);
 });
 
 router.post("/", async (req, res) => {
@@ -61,7 +60,6 @@ router.post("/", async (req, res) => {
     saveData(doctorData);
   });
 });
-
 
 const saveData = async (doctorData) => {
   try {

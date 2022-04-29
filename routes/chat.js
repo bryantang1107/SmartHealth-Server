@@ -76,6 +76,11 @@ router.post("/register", async (req, res) => {
       doctorInfo,
     } = req.body.userInfo;
 
+    const doctorData = await doctor.findById(doctorInfo);
+    if (doctorData.unavailable.includes(date)) {
+      return res.status(403).send("Unavailable");
+    }
+
     const exist = await storeTimeSlot(doctorInfo, time, date);
     if (exist) {
       return res.status(404).send("Slot Taken");

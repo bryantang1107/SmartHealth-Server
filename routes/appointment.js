@@ -33,19 +33,38 @@ router.patch("/unavailable/:id", async (req, res) => {
   const newdate = dates.map((x) => {
     return x.toISOString().split("T")[0];
   });
+  let exist = false;
   try {
     const doctorData = await doctorModal.findById(req.params.id);
     if (doctorData?.unavailable.length < 1) {
+      doctorData?.timeSlot.forEach((date) => {
+        if (newdate.includes(date.date)) {
+          exist = true;
+        }
+      });
+      if (exist) {
+        return res.status(403).send("Date Available");
+      }
       doctorData.unavailable = newdate;
+      await doctorData.save();
+      res.status(200).send("Done");
     } else {
       newdate.forEach((x) => {
-        if (doctorData?.unavailable.includes(x)) return;
+        doctorData?.timeSlot.forEach((date) => {
+          if (date.date === x) {
+            exist = true;
+          }
+        });
+        if (doctorData?.unavailable.includes(x)) {
+          exist = true;
+        }
+
         doctorData?.unavailable.push(x);
       });
+      if (exist) return res.status(403).send("Date Available");
+      await doctorData.save();
+      res.status(200).send("Done");
     }
-
-    await doctorData.save();
-    res.status(200).send("Done");
   } catch (error) {
     console.log(error);
   }

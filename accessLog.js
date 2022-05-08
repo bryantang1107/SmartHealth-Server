@@ -14,5 +14,4 @@ export const deleteFile = () => {
       console.log("file cleared");
     }
   });
-  console.log("clear file");
 };

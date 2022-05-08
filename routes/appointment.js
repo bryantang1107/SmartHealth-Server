@@ -6,10 +6,10 @@ import doctorModal from "../models/doctor.js";
 import activityModal from "../models/activity.js";
 import userModal from "../models/user.js";
 import historyModal from "../models/history.js";
-import doctor from "../models/doctor.js";
 
 router.get("/:id", async (req, res) => {
   let appointment;
+  let user;
   try {
     appointment = await AppointmentModal.find()
       .where("doctorInfo")
@@ -67,6 +67,21 @@ router.patch("/unavailable/:id", async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+  }
+});
+
+router.delete("/unavailable/:id", async (req, res) => {
+  try {
+    const doctor = await doctorModal.findById(req.params.id);
+    if (!doctor) return res.status(404).send("No Doctor");
+    const list = doctor.unavailable.filter((x) => {
+      return x !== req.body.removeDate;
+    });
+    doctor.unavailable = list;
+    await doctor.save();
+    res.status(200).send("Success");
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
   }
 });
 

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const historySchema = mongoose.Schema({
+const historySchema = new mongoose.Schema({
   _id: String,
   appointmentHistory: {
     type: Array,

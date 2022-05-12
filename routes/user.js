@@ -4,7 +4,6 @@ import appointment from "../models/appointment.js";
 import doctorModel from "../models/doctor.js";
 import userModel from "../models/user.js";
 import patientModal from "../models/patient.js";
-import roomModal from "../models/room.js";
 
 //get appointment info
 router.get("/:id", async (req, res) => {
@@ -35,13 +34,31 @@ router.get("/userDoctor/:id", async (req, res) => {
   }
 });
 
+router.get("/patient-record/:id", async (req, res) => {
+  let doctorInfo;
+  try {
+    doctorInfo = await patientModal.findById(req.params.id);
+    if (!doctorInfo) return res.status(404).send("No Information found");
+    const groups = doctorInfo.patient.reduce((groups, item) => {
+      const group = groups[item.patientId] || [];
+      group.push(item);
+      groups[item.patientId] = group;
+      return groups;
+    }, {});
+    res.status(200).send(groups);
+  } catch (err) {
+    res.status(500).send("Internal server Error");
+  }
+});
+
 router.post("/store-medical-record", async (req, res) => {
+  let doctorId;
   let date;
   let time;
   let doctor;
-  let doctorId;
   try {
     const user = await userModel.findById(req.body.id);
+    const appointment = await AppointmentModal.findById(req.body.id);
     if (!user) return res.status(404).send("No user Found");
     user.medicalRecord = [
       ...user.medicalRecord,
@@ -53,23 +70,18 @@ router.post("/store-medical-record", async (req, res) => {
         drug: req.body.drug,
       },
     ];
-    user.complete = true;
     await user.save();
-    const appointmentData = await appointment.findById(req.body.id);
-    await roomModal.findByIdAndDelete(appointmentData.roomInfo);
-
-    doctorId = appointmentData.doctorInfo;
-    date = appointmentData.date;
-    time = appointmentData.time;
-
-    await appointment.findByIdAndDelete(req.body.id);
+    doctorId = appointment.doctorInfo;
+    date = appointment.date;
+    time = appointment.time;
+    await AppointmentModal.findByIdAndDelete(id);
     doctor = await doctorModel.findById(doctorId);
     if (doctor !== null) {
       doctor.timeSlot = doctor.timeSlot.filter((x) => {
         x.date !== date && x.time !== time;
       });
       doctor.patientInfo = doctor.patientInfo.filter((x) => {
-        x !== req.body.id;
+        x !== id;
       });
       await doctor.save();
     }
@@ -81,14 +93,21 @@ router.post("/store-medical-record", async (req, res) => {
 });
 
 router.post("/store-patient-record", async (req, res) => {
-  let exist = false;
   let doctor;
   try {
     doctor = await patientModal.findById(req.body.doctorId);
-    const { patientId, route, drug, prescription, category, additional } =
-      req.body;
+    const {
+      patientId,
+      route,
+      drug,
+      prescription,
+      category,
+      additional,
+      diagnosis,
+    } = req.body;
 
     const patientRecord = {
+      diagnosis,
       route,
       drug,
       prescription,
@@ -98,13 +117,18 @@ router.post("/store-patient-record", async (req, res) => {
     if (!doctor) {
       const newRecord = await new patientModal({
         _id: req.body.doctorId,
-        patient: [{ patientId, info: [patientRecord] }],
+        patient: [{ patientId, date: new Date(), info: patientRecord }],
       });
       await newRecord.save();
     } else {
-      doctor.patient.push({ patientId, info: [patientRecord] });
+      doctor.patient.push({
+        patientId,
+        date: new Date(),
+        info: patientRecord,
+      });
+      await doctor.save();
     }
-    await doctor.save();
+
     res.status(203).send("Patient Record Added");
   } catch (error) {
     console.log(error);

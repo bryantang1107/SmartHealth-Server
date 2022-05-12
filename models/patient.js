@@ -5,10 +5,18 @@ const patientSchema = new mongoose.Schema({
   patient: {
     type: Array,
     patientId: String,
+    date: {
+      type: Date,
+    },
     info: {
-      type: Array,
+      diagnosis: String,
+      route: String,
+      drug: String,
+      prescription: String,
+      category: String,
+      additional: String,
     },
   },
 });
 
-export default mongoose.model("PatientRecords", patientSchema);
+export default mongoose.model("patientrecords", patientSchema);

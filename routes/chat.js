@@ -40,14 +40,12 @@ const storeTimeSlot = async (id, time, date) => {
   }
   return exist;
 };
-const formatDate = (date) => {
-  let hours = date.getHours();
-  let minutes = date.getMinutes();
+const formatDate = (date, time) => {
+  let hours = parseInt(time.split("T")[0]);
   let ampm = hours >= 12 ? "PM" : "AM";
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? "0" + minutes : minutes;
-  let strTime = hours + ":" + minutes + " " + ampm;
+  let strTime = hours + ":00" + ampm;
   return (
     date.getDate() +
     "/" +
@@ -117,7 +115,7 @@ router.post("/register", async (req, res) => {
         $push: { patientInfo: { userId } },
       }
     );
-    const newDate = formatDate(new Date(date));
+    const newDate = formatDate(new Date(date), time);
     const activity = await new activityModal({
       doctorId: doctorInfo,
       activityName: "New Appointment",

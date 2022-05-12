@@ -9,7 +9,6 @@ import historyModal from "../models/history.js";
 
 router.get("/:id", async (req, res) => {
   let appointment;
-  let user;
   try {
     appointment = await AppointmentModal.find()
       .where("doctorInfo")
@@ -17,6 +16,17 @@ router.get("/:id", async (req, res) => {
     res.status(200).send(appointment);
   } catch (error) {
     console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.get(`/patient-record/:id`, async (req, res) => {
+  let patient;
+  try {
+    patient = await historyModal.findById(req.params.id);
+    if (!patient) return res.status(404).send("No patient found");
+    res.status(200).send(patient);
+  } catch (error) {
     res.status(500).send("Internal Server Error");
   }
 });
@@ -87,10 +97,6 @@ router.delete("/unavailable/:id", async (req, res) => {
 
 router.post("/done/:id", async (req, res) => {
   const id = req.params.id;
-  let doctorId;
-  let date;
-  let time;
-  let doctor;
   try {
     const appointment = await AppointmentModal.findById(id);
     const historyAppointment = await historyModal.findById(id);
@@ -108,24 +114,6 @@ router.post("/done/:id", async (req, res) => {
       await newHistory.save();
     }
     await roomModal.findByIdAndDelete(appointment.roomInfo);
-    doctorId = appointment.doctorInfo;
-    date = appointment.date;
-    time = appointment.time;
-    await AppointmentModal.findByIdAndDelete(id);
-    doctor = await doctorModal.findById(doctorId);
-    if (doctor !== null) {
-      doctor.timeSlot = doctor.timeSlot.filter((x) => {
-        x.date !== date && x.time !== time;
-      });
-      doctor.patientInfo = doctor.patientInfo.filter((x) => {
-        x !== id;
-      });
-      await doctor.save();
-    }
-
-    const user = await userModal.findById(id);
-    user.complete = true;
-    await user.save();
     res.status(200).send("Success");
   } catch (error) {
     console.log(error);
@@ -181,7 +169,6 @@ router.get("/detail/:id", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  //delete from room
   const id = req.params.id;
   let doctorId;
   let date;
@@ -221,8 +208,6 @@ router.delete("/:id", async (req, res) => {
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
-
-  //store in activity (the sender,message (reason of cancellation),activity name)
 });
 
 export default router;

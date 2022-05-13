@@ -19,6 +19,17 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.get("/medical-record/:id", async (req, res) => {
+  let user;
+  try {
+    user = await userModel.findById(req.params.id);
+    if (!user) return res.status(404).send("User Do not exist");
+    res.status(200).send(user.medicalRecord);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 //get doctor info from appointment
 router.get("/userDoctor/:id", async (req, res) => {
   let doctor;
@@ -58,7 +69,7 @@ router.post("/store-medical-record", async (req, res) => {
   let doctor;
   try {
     const user = await userModel.findById(req.body.id);
-    const appointment = await AppointmentModal.findById(req.body.id);
+    const appointmentData = await appointment.findById(req.body.id);
     if (!user) return res.status(404).send("No user Found");
     user.medicalRecord = [
       ...user.medicalRecord,
@@ -66,28 +77,32 @@ router.post("/store-medical-record", async (req, res) => {
         diagnosis: req.body.diagnosis,
         route: req.body.route,
         category: req.body.category,
+        doctorConsulted: req.body.doctorConsulted,
         prescription: req.body.prescription,
         drug: req.body.drug,
+        date: new Date(),
       },
     ];
+    user.complete = true;
     await user.save();
-    doctorId = appointment.doctorInfo;
-    date = appointment.date;
-    time = appointment.time;
-    await AppointmentModal.findByIdAndDelete(id);
+    doctorId = appointmentData.doctorInfo;
+    date = appointmentData.date;
+    time = appointmentData.time;
+    await appointment.findByIdAndDelete(req.body.id);
     doctor = await doctorModel.findById(doctorId);
     if (doctor !== null) {
       doctor.timeSlot = doctor.timeSlot.filter((x) => {
         x.date !== date && x.time !== time;
       });
       doctor.patientInfo = doctor.patientInfo.filter((x) => {
-        x !== id;
+        x !== req.body.id;
       });
       await doctor.save();
     }
 
     res.status(200).send("Successfully stored");
   } catch (error) {
+    console.log(error);
     res.status(500).send("Internal Server Error");
   }
 });

@@ -19,6 +19,7 @@ import mongoose from "mongoose";
 import userRoute from "./routes/user.js";
 import appointmentRoute from "./routes/appointment.js";
 import activityRoute from "./routes/activity.js";
+import Grid from "gridfs-stream";
 
 import fs from "fs";
 import { dirname } from "path";
@@ -173,7 +174,7 @@ app.use("/covid", router);
 app.use("/find-doctor", doctorRoute);
 
 app.use("/pharmacy", pharmacy);
-
+let gfs;
 server.listen(process.env.PORT, () => {
   console.log(`Server is listening on port ${process.env.PORT}`);
   makeReminder();
@@ -181,11 +182,14 @@ server.listen(process.env.PORT, () => {
   //connect to database
   mongoose.connect(process.env.MONGO_URL);
   const db = mongoose.connection;
+
   db.on("error", (err) => {
     console.error(err);
   });
 
   db.on("open", () => {
     console.log("Smart Health Database Connected");
+    gfs = Grid(db, mongoose.mongo);
+    gfs.collection("uploads");
   });
 });

@@ -4,8 +4,13 @@ import appointment from "../models/appointment.js";
 import doctorModel from "../models/doctor.js";
 import userModel from "../models/user.js";
 import patientModal from "../models/patient.js";
-
-//get appointment info
+import upload from "../middleware/GridFs.js";
+import mongoose from "mongoose";
+import Grid from "gridfs-stream";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 router.get("/:id", async (req, res) => {
   let user;
   try {
@@ -61,6 +66,76 @@ router.get("/patient-record/:id", async (req, res) => {
     res.status(500).send("Internal server Error");
   }
 });
+mongoose.connect(process.env.MONGO_URL);
+const db = mongoose.connection;
+let gridfsBucket = new mongoose.mongo.GridFSBucket(db, {
+  bucketName: "uploads",
+});
+let gfs;
+gfs = Grid(db, mongoose.mongo);
+gfs.collection("uploads");
+
+router.post("/upload-file/:id", upload.single("file"), async (req, res) => {
+  if (!req.file) res.status(404).send("No file input");
+  res.status(200).send(req.filename);
+});
+
+router.get("/get-medical-record/:id", (req, res) => {
+  const id = req.params.id;
+  gfs.files.findOne(
+    { filename: req.query.file, metadata: { userId: id } },
+    (err, files) => {
+      if (files) {
+        if (
+          files.contentType === "image/jpeg" ||
+          files.contentType === "image/png"
+        ) {
+          const readstream = gridfsBucket.openDownloadStream(files._id);
+          readstream.pipe(res);
+        } else {
+          res.status(200).send(undefined);
+        }
+      }
+      if (err) {
+        console.log("error");
+        res.status(404).send("No file found");
+      }
+    }
+  );
+});
+
+router.get("/get-medical-file/:id", (req, res) => {
+  const id = req.params.id;
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const filepath = path.join(__dirname, "/medical");
+  gfs.files.findOne(
+    { filename: req.query.file, metadata: { userId: id } },
+    (err, files) => {
+      if (files) {
+        if (
+          // files.contentType === "application/pdf" ||
+          files.contentType === "text/plain"
+        ) {
+          const readstream = gridfsBucket.openDownloadStream(files._id);
+          readstream
+            .pipe(fs.createWriteStream(`${filepath}/${id}.txt`))
+            .on("error", (err) => {
+              console.log(err);
+            })
+            .on("finish", () => {
+              let stream = fs.createReadStream(`${filepath}/${id}.txt`);
+              stream.pipe(res);
+            });
+          //return res.json(files);
+        }
+      }
+      // if (err) {
+      //   res.status(404).send("No file found");
+      // }
+    }
+  );
+});
 
 router.post("/store-medical-record", async (req, res) => {
   let doctorId;
@@ -79,6 +154,7 @@ router.post("/store-medical-record", async (req, res) => {
         category: req.body.category,
         doctorConsulted: req.body.doctorConsulted,
         prescription: req.body.prescription,
+        filename: req.body.filename,
         drug: req.body.drug,
         date: new Date(),
       },

@@ -103,20 +103,37 @@ router.get("/get-medical-record/:id", (req, res) => {
     }
   );
 });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const filepath = path.join(__dirname, "/medical");
 
 router.get("/get-medical-file/:id", (req, res) => {
   const id = req.params.id;
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-  const filepath = path.join(__dirname, "/medical");
   gfs.files.findOne(
     { filename: req.query.file, metadata: { userId: id } },
     (err, files) => {
       if (files) {
         if (
-          // files.contentType === "application/pdf" ||
+          files.contentType === "application/pdf" ||
           files.contentType === "text/plain"
         ) {
+          return res.json(files);
+        }
+      }
+      if (err) {
+        res.status(404).send("No file found");
+      }
+    }
+  );
+});
+
+router.get("/download-file/:id", (req, res) => {
+  const id = req.params.id;
+  gfs.files.findOne(
+    { filename: req.query.file, metadata: { userId: id } },
+    (err, files) => {
+      if (files) {
+        if (files.contentType === "text/plain") {
           const readstream = gridfsBucket.openDownloadStream(files._id);
           readstream
             .pipe(fs.createWriteStream(`${filepath}/${id}.txt`))
@@ -124,15 +141,25 @@ router.get("/get-medical-file/:id", (req, res) => {
               console.log(err);
             })
             .on("finish", () => {
-              let stream = fs.createReadStream(`${filepath}/${id}.txt`);
-              stream.pipe(res);
+              const file = `${filepath}` + "/" + `${id}.txt`;
+              res.download(file);
             });
-          //return res.json(files);
+        } else if (files.contentType === "application/pdf") {
+          const readstream = gridfsBucket.openDownloadStream(files._id);
+          readstream
+            .pipe(fs.createWriteStream(`${filepath}/${id}.pdf`))
+            .on("error", (err) => {
+              console.log(err);
+            })
+            .on("finish", () => {
+              const file = `${filepath}` + "/" + `${id}.pdf`;
+              res.download(file);
+            });
         }
       }
-      // if (err) {
-      //   res.status(404).send("No file found");
-      // }
+      if (err) {
+        res.status(404).send("No file found");
+      }
     }
   );
 });

@@ -20,6 +20,7 @@ import userRoute from "./routes/user.js";
 import appointmentRoute from "./routes/appointment.js";
 import activityRoute from "./routes/activity.js";
 import Grid from "gridfs-stream";
+import { sendEmail } from "./confirmation.js";
 
 import fs from "fs";
 import { dirname } from "path";
@@ -139,6 +140,7 @@ io.of("/chat").on("connection", (socket) => {
   });
 });
 
+app.set("views", "./views");
 //middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

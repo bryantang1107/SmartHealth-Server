@@ -40,7 +40,7 @@ export const makeReminder = () => {
           to: email, //to user's email address for reminder
           subject: "A Reminder From Smart Health 🏥", //get data from db
 
-          html: "Description test" + content,
+          html: content,
         };
         smtpTransport.sendMail(options, (err, data) => {
           if (err) {

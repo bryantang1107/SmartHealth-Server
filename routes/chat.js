@@ -12,6 +12,7 @@ import bcrypt from "bcrypt";
 import doctor from "../models/doctor.js";
 import room from "../models/room.js";
 import userModal from "../models/user.js";
+import { sendEmail } from "../confirmation.js";
 
 const storeTimeSlot = async (id, time, date) => {
   const slot = { date, time: time };
@@ -129,6 +130,8 @@ router.post("/register", async (req, res) => {
     const userComplete = await userModal.findById(userId);
     userComplete.complete = false;
     await userComplete.save();
+
+    sendEmail(email);
 
     res.status(200).send(true);
   } catch (error) {

@@ -27,6 +27,7 @@ router.get(`/patient-record/:id`, async (req, res) => {
     if (!patient) return res.status(404).send("No patient found");
     res.status(200).send(patient);
   } catch (error) {
+    console.log(error);
     res.status(500).send("Internal Server Error");
   }
 });
@@ -96,23 +97,7 @@ router.delete("/unavailable/:id", async (req, res) => {
 });
 
 router.post("/done/:id", async (req, res) => {
-  const id = req.params.id;
   try {
-    const appointment = await AppointmentModal.findById(id);
-    const historyAppointment = await historyModal.findById(id);
-    if (historyAppointment) {
-      historyAppointment.appointmentHistory = [
-        ...historyAppointment.appointmentHistory,
-        appointment,
-      ];
-      await historyAppointment.save();
-    } else {
-      const newHistory = new historyModal({
-        _id: id,
-        appointmentHistory: [appointment],
-      });
-      await newHistory.save();
-    }
     await roomModal.findByIdAndDelete(appointment.roomInfo);
     res.status(200).send("Success");
   } catch (error) {
@@ -204,8 +189,18 @@ router.delete("/:id", async (req, res) => {
     const user = await userModal.findById(id);
     user.complete = true;
     await user.save();
+
+    const history = await historyModal.findById(id);
+    const latestHistory =
+      history.appointmentHistory[history.appointmentHistory.length - 1];
+    latestHistory.status = "Cancelled";
+    history.appointmentHistory[history.appointmentHistory.length - 1] =
+      latestHistory;
+    await history.save();
+
     res.status(200).send("Success");
   } catch (error) {
+    console.log(error);
     res.status(500).send("Internal Server Error");
   }
 });

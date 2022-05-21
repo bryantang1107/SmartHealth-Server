@@ -12,6 +12,8 @@ import bcrypt from "bcrypt";
 import doctor from "../models/doctor.js";
 import room from "../models/room.js";
 import userModal from "../models/user.js";
+import historyModal from "../models/history.js";
+import AppointmentModal from "../models/appointment.js";
 import { sendEmail } from "../confirmation.js";
 
 const storeTimeSlot = async (id, time, date) => {
@@ -130,6 +132,23 @@ router.post("/register", async (req, res) => {
     const userComplete = await userModal.findById(userId);
     userComplete.complete = false;
     await userComplete.save();
+
+    const historyAppointment = await historyModal.findById(userId);
+    const appointment = await AppointmentModal.findById(userId);
+    appointment.status = "pending";
+    if (historyAppointment) {
+      historyAppointment.appointmentHistory = [
+        ...historyAppointment.appointmentHistory,
+        appointment,
+      ];
+      await historyAppointment.save();
+    } else {
+      const newHistory = new historyModal({
+        _id: userId,
+        appointmentHistory: [appointment],
+      });
+      await newHistory.save();
+    }
 
     sendEmail(email);
 

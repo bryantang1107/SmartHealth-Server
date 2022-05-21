@@ -9,7 +9,7 @@ import login from "./routes/login.js";
 import { authenticateJWT } from "./middleware/authenticateToken.js";
 import chat from "./routes/chat.js";
 import { fileURLToPath } from "url";
-import { makeReminder } from "./middleware/reminder.js";
+//import { makeReminder } from "./middleware/reminder.js";
 import { createRequire } from "module";
 import pharmacy from "./routes/pharmacy.js";
 import morgan from "morgan";
@@ -20,7 +20,7 @@ import userRoute from "./routes/user.js";
 import appointmentRoute from "./routes/appointment.js";
 import activityRoute from "./routes/activity.js";
 import Grid from "gridfs-stream";
-import { sendEmail } from "./confirmation.js";
+import scheduler from "./middleware/scheduler.js";
 
 import fs from "fs";
 import { dirname } from "path";
@@ -179,8 +179,9 @@ app.use("/pharmacy", pharmacy);
 let gfs;
 server.listen(process.env.PORT, () => {
   console.log(`Server is listening on port ${process.env.PORT}`);
-  makeReminder();
+  // makeReminder();
   deleteFile();
+  scheduler.start();
   //connect to database
   mongoose.connect(process.env.MONGO_URL);
   const db = mongoose.connection;

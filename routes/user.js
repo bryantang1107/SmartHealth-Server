@@ -11,6 +11,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import historyModal from "../models/history.js";
 router.get("/:id", async (req, res) => {
   let user;
   try {
@@ -55,13 +56,13 @@ router.get("/patient-record/:id", async (req, res) => {
   try {
     doctorInfo = await patientModal.findById(req.params.id);
     if (!doctorInfo) return res.status(404).send("No Information found");
-    const groups = doctorInfo.patient.reduce((groups, item) => {
-      const group = groups[item.patientId] || [];
-      group.push(item);
-      groups[item.patientId] = group;
-      return groups;
-    }, {});
-    res.status(200).send(groups);
+    // const groups = doctorInfo.patient.reduce((groups, item) => {
+    //   const group = groups[item.patientId] || [];
+    //   group.push(item);
+    //   groups[item.patientId] = group;
+    //   return groups;
+    // }, {});
+    res.status(200).send(doctorInfo);
   } catch (err) {
     res.status(500).send("Internal server Error");
   }
@@ -246,7 +247,13 @@ router.post("/store-patient-record", async (req, res) => {
       });
       await doctor.save();
     }
-
+    const history = await historyModal.findById(patientId);
+    const latestHistory =
+      history.appointmentHistory[history.appointmentHistory.length - 1];
+    latestHistory.status = "Completed";
+    history.appointmentHistory[history.appointmentHistory.length - 1] =
+      latestHistory;
+    await history.save();
     res.status(203).send("Patient Record Added");
   } catch (error) {
     console.log(error);

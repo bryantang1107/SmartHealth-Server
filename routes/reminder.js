@@ -26,25 +26,29 @@ router.get("/:id/edit", async (req, res) => {
 });
 
 router.post("/:id", async (req, res) => {
-  const name = req.body.name;
-  const phoneNumber = req.body.phoneNumber;
-  const notification = req.body.notification;
-  const timeZone = req.body.timeZone;
-  const detail = req.body.detail;
-  const date = new Date(req.body.time);
-  const time = moment(date, "MM-DD-YYYY hh:mma");
-  console.log(name, phoneNumber, notification, timeZone, time);
-  const appointment = new reminderModel({
-    _id: req.params.id,
-    name,
-    phoneNumber,
-    notification,
-    timeZone,
-    detail,
-    time,
-  });
-  await appointment.save();
-  res.status(200).send("Success");
+  try {
+    const name = req.body.name;
+    const phoneNumber = req.body.phoneNumber;
+    const notification = req.body.notification;
+    const timeZone = req.body.timeZone;
+    const detail = req.body.detail;
+    const date = new Date(req.body.time);
+    const time = moment(date, "MM-DD-YYYY hh:mma");
+    console.log(name, phoneNumber, notification, timeZone, time);
+    const appointment = new reminderModel({
+      _id: req.params.id,
+      name,
+      phoneNumber,
+      notification,
+      timeZone,
+      detail,
+      time,
+    });
+    await appointment.save();
+    res.status(200).send("Success");
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 //edit route
@@ -52,8 +56,12 @@ router.post("/:id/edit", async (req, res) => {
   const id = req.params.id;
   const name = req.body.name;
   const phoneNumber = req.body.phoneNumber;
+  const timeZone = req.body.timeZone;
+  const detail = req.body.detail;
   const notification = req.body.notification;
-  const time = moment(req.body.time, "MM-DD-YYYY hh:mma");
+  const date = new Date(req.body.time);
+  const time = moment(date, "MM-DD-YYYY hh:mma");
+  console.log(name, phoneNumber, notification, timeZone, time);
   let appointment;
   try {
     appointment = await reminderModel.findOne({ _id: id });
@@ -61,11 +69,15 @@ router.post("/:id/edit", async (req, res) => {
     appointment.name = name;
     appointment.phoneNumber = phoneNumber;
     appointment.notification = notification;
+    appointment.timeZone = timeZone;
+    appointment.detail = detail;
     appointment.time = time;
 
     await appointment.save();
     res.status(200).send("Success");
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 //delete
@@ -114,17 +126,6 @@ router.delete("/cancel-email-reminder", async (req, res) => {
   }
 });
 
-router.post("/update", async (req, res) => {
-  let user;
-  try {
-    user = await userModel.findById(req.body.userData);
-    let reminder = user.reminder;
-    reminder = [...reminder, req.body.obj];
-    user.reminder = reminder;
-    await user.save();
-  } catch (error) {
-    res.status(500).send("Internal Server Error");
-  }
-});
+
 
 export default router;

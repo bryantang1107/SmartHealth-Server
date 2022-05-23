@@ -46,12 +46,12 @@ reminderSchema.statics.sendNotifications = function (callback) {
       process.env.TWILIO_ACCOUNT_SID,
       process.env.TWILIO_AUTH_TOKEN
     );
-    appointments.forEach(function (appointment) {
+    appointments.forEach(async function (appointment) {
       // Create options to send the message
       const options = {
         to: `+ ${appointment.phoneNumber}`,
         from: process.env.TWILIO_PHONE_NUMBER,
-        body: `Hi ${appointment.name}. Just a reminder that you have an appointment coming up.\n get the detail in the reminder list`,
+        body: `Hi ${appointment.name}. Just a reminder that you have an appointment coming up.\n These are the details: \n ${appointment.detail}`,
       };
 
       // Send the message!
@@ -68,6 +68,9 @@ reminderSchema.statics.sendNotifications = function (callback) {
           console.log(`Message sent to ${masked}`);
         }
       });
+
+      await Reminder.findByIdAndRemove(appointment._id);
+      console.log("Deleted");
     });
 
     // Don't wait on success/failure, just indicate all messages have been

@@ -35,6 +35,18 @@ router.get("/medical-record/:id", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+router.post("/update", async (req, res) => {
+  let user;
+  try {
+    user = await userModel.findById(req.body.userData);
+    let reminder = user.reminder;
+    reminder = [...reminder, req.body.obj];
+    user.reminder = reminder;
+    await user.save();
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 //get doctor info from appointment
 router.get("/userDoctor/:id", async (req, res) => {

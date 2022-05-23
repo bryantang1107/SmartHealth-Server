@@ -6,6 +6,7 @@ import doctorModal from "../models/doctor.js";
 import activityModal from "../models/activity.js";
 import userModal from "../models/user.js";
 import historyModal from "../models/history.js";
+import reminderModal from "../models/reminder.js";
 
 router.get("/:id", async (req, res) => {
   let appointment;
@@ -197,6 +198,8 @@ router.delete("/:id", async (req, res) => {
     history.appointmentHistory[history.appointmentHistory.length - 1] =
       latestHistory;
     await history.save();
+
+    await reminderModal.findByIdAndDelete(id);
 
     res.status(200).send("Success");
   } catch (error) {

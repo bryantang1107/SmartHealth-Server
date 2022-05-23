@@ -811,7 +811,7 @@ export const medicine = [
     category: "personal",
     price: 14.9,
     image:
-      "https://www.alpropharmacy.com/wp-content/uploads/2022/02/00041751_L_1_5421.jpg",
+      "https://winwamedical.com/wp-content/uploads/2020/08/Ridped-Lotion-60ml-Box-Bottle-F.jpg",
     precautions: [
       "Hypersensitivity to clobetasol propionate or to other corticosteroids",
       "Infections of the scalp",
@@ -1039,7 +1039,7 @@ export const medicine = [
     category: "medicine",
     price: 29.0,
     image:
-      "https://www.al-dawaa.com/media/catalog/product/cache/78f7fae576dd5c81f7109f594945761a/1/0/101426.jpg",
+      "https://mimsshst.blob.core.windows.net/drug-resources/SG/packshot/Micardis6002PPS0.JPG",
     route: "oral",
     precautions: [
       "Hypersensitivity to telmisartan",
@@ -1496,7 +1496,7 @@ export const medicine = [
     category: "health",
     price: 18.0,
     image:
-      "https://multicare2u.com.my/pub/media/catalog/product/cache/202ccf9e112ee4cee4e79c3774938c38/b/v/bvs-1000-x-1000.png",
+      "https://100comments.com/wp-content/uploads/2016/09/Shine-Bokbunja-Vinegar.jpg",
     ingredients:
       "Oat Bran, Wheat, Wheat Bran, Wheat Germ, Brown Rice, Red Rice, Millet, Coix Seed, Sesame Seed, Corn, Red Kidney Bean, Black Bean, Soy Bean, Mung Bean, White Navy Bean Originated From Australia And Europe. Vitamin (B1, B2, B6, B9, E), Carbohydrate, Protein, Calcium, Iron, Zinc, Magnesium, Sodium, Beta-Glucan, Dietary Fibre, Unsaturated Fat.",
     halal: "Halal",

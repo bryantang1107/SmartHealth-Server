@@ -18,7 +18,7 @@ router.get("/:id/edit", async (req, res) => {
   const id = req.params.id;
   try {
     const appointment = await reminderModel.findOne({ _id: id });
-    if (!appointment) return res.status(404).send("No reminder");
+    if (!appointment) return res.status(404).send("No reminder lol");
     res.status(200).send(appointment);
   } catch (error) {
     res.status(500).send("Internal Server Error");
@@ -125,7 +125,5 @@ router.delete("/cancel-email-reminder", async (req, res) => {
     res.status(500).send("Internal Server Errror");
   }
 });
-
-
 
 export default router;

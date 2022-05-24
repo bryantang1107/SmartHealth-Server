@@ -55,7 +55,7 @@ io.of("/chat").on("connection", (socket) => {
     socket.emit("message", {
       user: "admin",
       time: current.toLocaleTimeString(),
-      text: `${user.username}, Welcome To The Consultation Room. For the video call option, please only allow one party to initiate the call at a time, a "join video" button will appear. - Smart Health Admin  `,
+      text: `${user.username}, Welcome To The Consultation Room. - Smart Health Admin  `,
       type: "text",
     });
 

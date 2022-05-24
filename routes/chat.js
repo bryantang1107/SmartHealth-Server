@@ -15,6 +15,7 @@ import userModal from "../models/user.js";
 import historyModal from "../models/history.js";
 import AppointmentModal from "../models/appointment.js";
 import { sendEmail } from "../confirmation.js";
+import meetingModal from "../models/meeting.js";
 
 const storeTimeSlot = async (id, time, date) => {
   const slot = { date, time: time };
@@ -193,6 +194,38 @@ router.get("/getRoomInfo/:id", async (req, res) => {
     res.status(200).send(roomCreds);
   } catch (err) {
     res.sendStatus(500);
+  }
+});
+
+router.post("/join-room/:id", async (req, res) => {
+  try {
+    let meeting = await new meetingModal({
+      _id: req.params.id,
+    });
+    await meeting.save();
+    res.status(203).send("Success");
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.get("/join-room/:id", async (req, res) => {
+  let meeting;
+  try {
+    meeting = await meetingModal.findById(req.params.id);
+    if (!meeting) return res.status(404).send("No user");
+    res.status(200).send(meeting);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.delete("join-room/:id", async (req, res) => {
+  try {
+    await meetingModal.findByIdAndDelete(req.params.id);
+    res.status(203).send("Success");
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
   }
 });
 

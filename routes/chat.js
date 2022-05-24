@@ -222,6 +222,7 @@ router.get("/join-room/:id", async (req, res) => {
 router.delete("join-room/:id", async (req, res) => {
   try {
     await meetingModal.findByIdAndDelete(req.params.id);
+    console.log("delete");
     res.status(203).send("Success");
   } catch (error) {
     res.status(500).send("Internal Server Error");

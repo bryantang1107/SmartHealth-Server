@@ -213,7 +213,6 @@ router.get("/join-room/:id", async (req, res) => {
   let meeting;
   try {
     meeting = await meetingModal.findById(req.params.id);
-    if (!meeting) return res.status(404).send("No user");
     res.status(200).send(meeting);
   } catch (error) {
     res.status(500).send("Internal Server Error");

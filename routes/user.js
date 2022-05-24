@@ -4,6 +4,7 @@ import appointment from "../models/appointment.js";
 import doctorModel from "../models/doctor.js";
 import userModel from "../models/user.js";
 import patientModal from "../models/patient.js";
+import roomModal from "../models/room.js";
 import upload from "../middleware/GridFs.js";
 import mongoose from "mongoose";
 import Grid from "gridfs-stream";
@@ -185,6 +186,7 @@ router.post("/store-medical-record", async (req, res) => {
   try {
     const user = await userModel.findById(req.body.id);
     const appointmentData = await appointment.findById(req.body.id);
+    await roomModal.findByIdAndDelete(appointmentData.roomInfo);
     if (!user) return res.status(404).send("No user Found");
     user.medicalRecord = [
       ...user.medicalRecord,

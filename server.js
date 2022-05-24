@@ -9,7 +9,6 @@ import login from "./routes/login.js";
 import { authenticateJWT } from "./middleware/authenticateToken.js";
 import chat from "./routes/chat.js";
 import { fileURLToPath } from "url";
-//import { makeReminder } from "./middleware/reminder.js";
 import { createRequire } from "module";
 import pharmacy from "./routes/pharmacy.js";
 import morgan from "morgan";

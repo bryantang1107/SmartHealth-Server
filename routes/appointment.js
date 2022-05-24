@@ -97,16 +97,6 @@ router.delete("/unavailable/:id", async (req, res) => {
   }
 });
 
-router.post("/done/:id", async (req, res) => {
-  try {
-    await roomModal.findByIdAndDelete(appointment.roomInfo);
-    res.status(200).send("Success");
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
 router.get("/past-appointment/:id", async (req, res) => {
   let history;
   try {

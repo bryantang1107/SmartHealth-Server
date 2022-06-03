@@ -55,7 +55,7 @@ io.of("/chat").on("connection", (socket) => {
     socket.emit("message", {
       user: "admin",
       time: current.toLocaleTimeString(),
-      text: `${user.username}, Welcome To The Consultation Room. - Smart Health Admin  `,
+      text: `${user.username}, Welcome To The Consultation Room - Smart Health Admin  `,
       type: "text",
     });
 

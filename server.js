@@ -89,6 +89,10 @@ io.of("/chat").on("connection", (socket) => {
     socket.emit("me", socket.id);
   });
 
+  socket.on("endCall", () => {
+    socket.emit("leaveCall");
+  });
+
   socket.on("callUser", (data) => {
     const user = getUser(socket.id);
 

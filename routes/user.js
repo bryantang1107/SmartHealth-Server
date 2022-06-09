@@ -13,6 +13,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import historyModal from "../models/history.js";
+import joinModal from "../models/join.js";
 router.get("/:id", async (req, res) => {
   let user;
   try {
@@ -69,12 +70,6 @@ router.get("/patient-record/:id", async (req, res) => {
   try {
     doctorInfo = await patientModal.findById(req.params.id);
     if (!doctorInfo) return res.status(404).send("No Information found");
-    // const groups = doctorInfo.patient.reduce((groups, item) => {
-    //   const group = groups[item.patientId] || [];
-    //   group.push(item);
-    //   groups[item.patientId] = group;
-    //   return groups;
-    // }, {});
     res.status(200).send(doctorInfo);
   } catch (err) {
     res.status(500).send("Internal server Error");
@@ -178,6 +173,7 @@ router.get("/download-file/:id", (req, res) => {
   );
 });
 
+//store medical record for user
 router.post("/store-medical-record", async (req, res) => {
   let doctorId;
   let date;
@@ -187,6 +183,7 @@ router.post("/store-medical-record", async (req, res) => {
     const user = await userModel.findById(req.body.id);
     const appointmentData = await appointment.findById(req.body.id);
     await roomModal.findByIdAndDelete(appointmentData.roomInfo);
+    await joinModal.findByIdAndDelete(req.body.id);
     if (!user) return res.status(404).send("No user Found");
     user.medicalRecord = [
       ...user.medicalRecord,
@@ -225,6 +222,7 @@ router.post("/store-medical-record", async (req, res) => {
   }
 });
 
+//store for doctor's appointment history
 router.post("/store-patient-record", async (req, res) => {
   let doctor;
   try {

@@ -7,6 +7,7 @@ import activityModal from "../models/activity.js";
 import userModal from "../models/user.js";
 import historyModal from "../models/history.js";
 import reminderModal from "../models/reminder.js";
+import joinModal from "../models/join.js";
 
 router.get("/:id", async (req, res) => {
   let appointment;
@@ -17,6 +18,39 @@ router.get("/:id", async (req, res) => {
     res.status(200).send(appointment);
   } catch (error) {
     console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.post("/joinroom/:id", async (req, res) => {
+  let appointment;
+
+  try {
+    appointment = await joinModal.findById(req.params.id);
+    if (!appointment) {
+      appointment = await new joinModal({
+        _id: req.params.id,
+        roomID: req.body.roomID,
+        username: req.body.username,
+      });
+      await appointment.save();
+    }
+    res.status(200).send("ok");
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+router.get("/joinroom/:id", async (req, res) => {
+  let appointment;
+
+  try {
+    appointment = await joinModal.findById(req.params.id);
+    if (!appointment) {
+      res.status(404).send("No creds found");
+    }
+
+    res.status(200).send(appointment);
+  } catch (error) {
     res.status(500).send("Internal Server Error");
   }
 });

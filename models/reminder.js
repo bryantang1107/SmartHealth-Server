@@ -29,7 +29,9 @@ reminderSchema.methods.requiresNotification = function (date) {
 
 reminderSchema.statics.sendNotifications = function (callback) {
   // now
-  const searchDate = new Date();
+  const searchDate = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Kuala_Lumpur",
+  });
   //error here
   Reminder.find().then(function (appointments) {
     appointments = appointments.filter(function (appointment) {

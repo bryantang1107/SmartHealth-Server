@@ -44,13 +44,8 @@ router.delete("/joinroom/:id", async (req, res) => {
 });
 router.get("/joinroom/:id", async (req, res) => {
   let appointment;
-
   try {
     appointment = await joinModal.findById(req.params.id);
-    if (!appointment) {
-      res.status(404).send("No creds found");
-    }
-
     res.status(200).send(appointment);
   } catch (error) {
     res.status(500).send("Internal Server Error");

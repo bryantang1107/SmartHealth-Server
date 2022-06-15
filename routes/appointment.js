@@ -26,15 +26,13 @@ router.post("/joinroom/:id", async (req, res) => {
   let appointment;
 
   try {
-    appointment = await joinModal.findById(req.params.id);
-    if (!appointment) {
-      appointment = await new joinModal({
-        _id: req.params.id,
-        roomID: req.body.roomID,
-        username: req.body.username,
-      });
-      await appointment.save();
-    }
+    await joinModal.findByIdAndRemove(req.params.id);
+    appointment = await new joinModal({
+      _id: req.params.id,
+      roomID: req.body.roomID,
+      username: req.body.username,
+    });
+    await appointment.save();
     res.status(200).send("ok");
   } catch (error) {
     res.status(500).send("Internal Server Error");
@@ -187,6 +185,8 @@ router.delete("/:id", async (req, res) => {
   try {
     const appointment = await AppointmentModal.findById(id);
     await roomModal.findByIdAndDelete(appointment.roomInfo);
+    await joinModal.findByIdAndDelete(id);
+    await joinModal.findByIdAndDelete(doctorId);
     doctorId = appointment.doctorInfo;
     date = appointment.date;
     time = appointment.time;

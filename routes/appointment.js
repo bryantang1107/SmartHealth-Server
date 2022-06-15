@@ -26,7 +26,6 @@ router.post("/joinroom/:id", async (req, res) => {
   let appointment;
 
   try {
-    await joinModal.findByIdAndRemove(req.params.id);
     appointment = await new joinModal({
       _id: req.params.id,
       roomID: req.body.roomID,
@@ -37,6 +36,11 @@ router.post("/joinroom/:id", async (req, res) => {
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
+});
+
+router.delete("/joinroom/:id", async (req, res) => {
+  await joinModal.findByIdAndDelete(req.params.id);
+  res.status(203).send("Done");
 });
 router.get("/joinroom/:id", async (req, res) => {
   let appointment;

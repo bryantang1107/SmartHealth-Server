@@ -181,7 +181,7 @@ app.use("/find-doctor", doctorRoute);
 app.use("/pharmacy", pharmacy);
 let gfs;
 server.listen(process.env.PORT, () => {
-  console.log(`Server is listening on port ${process.env.PORT}`);
+  console.log(`Server is listening on port : ${process.env.PORT}`);
   // makeReminder();
   deleteFile();
   scheduler.start();

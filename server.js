@@ -84,7 +84,7 @@ io.of("/chat").on("connection", (socket) => {
     socket.broadcast.to(user.room).emit("message", {
       user: "admin",
       time: current,
-      text: `${name}, Started Video, Please Join !`,
+      text: `${name} has started video, Please Join !`,
       type: "text",
     });
   });

@@ -50,11 +50,13 @@ io.of("/chat").on("connection", (socket) => {
     const { error, user } = addUser({ id: socket.id, username, room });
     if (error) return callback(error);
     //can pass back callback with arguments to client
-    const current = new Date();
+    const current = new Date().toLocaleTimeString("en-US", {
+      timeZone: "Asia/Kuala_Lumpur",
+    });
     socket.join(user.room);
     socket.emit("message", {
       user: "admin",
-      time: current.toLocaleTimeString(),
+      time: current,
       text: `${user.username}, Welcome To The Consultation Room - Smart Health Admin  `,
       type: "text",
     });
@@ -76,10 +78,12 @@ io.of("/chat").on("connection", (socket) => {
   });
   socket.on("call", (name) => {
     const user = getUser(socket.id);
-    const current = new Date();
+    const current = new Date().toLocaleTimeString("en-US", {
+      timeZone: "Asia/Kuala_Lumpur",
+    });
     socket.broadcast.to(user.room).emit("message", {
       user: "admin",
-      time: current.toLocaleTimeString(),
+      time: current,
       text: `${name}, Started Video, Please Join !`,
       type: "text",
     });
@@ -108,11 +112,13 @@ io.of("/chat").on("connection", (socket) => {
   });
 
   socket.on("send-message", (message, callback) => {
-    const current = new Date();
+    const current = new Date().toLocaleTimeString("en-US", {
+      timeZone: "Asia/Kuala_Lumpur",
+    });
     const user = getUser(socket.id);
     io.of("/chat").to(user.room).emit("message", {
       user: user.username,
-      time: current.toLocaleTimeString(),
+      time: current,
       text: message.body,
       type: message.type,
       fileName: message.fileName,
@@ -128,14 +134,16 @@ io.of("/chat").on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    const current = new Date();
+    const current = new Date().toLocaleTimeString("en-US", {
+      timeZone: "Asia/Kuala_Lumpur",
+    });
     const user = removeUser(socket.id);
     if (user) {
       io.of("/chat")
         .to(user.room)
         .emit("message", {
           user: "admin",
-          time: current.toLocaleTimeString(),
+          time: current,
           text: `${user.username} has left the chat.`,
           type: "text",
         });

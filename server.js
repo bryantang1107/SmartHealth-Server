@@ -63,7 +63,7 @@ io.of("/chat").on("connection", (socket) => {
 
     socket.broadcast.to(user.room).emit("message", {
       user: "admin",
-      time: current.toLocaleTimeString(),
+      time: current,
       text: `${user.username}, has joined !`,
       type: "text",
     });

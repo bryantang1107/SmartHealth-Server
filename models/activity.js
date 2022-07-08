@@ -5,7 +5,9 @@ const activitySchema = new mongoose.Schema({
   activityName: String,
   date: {
     type: Date,
-    default: Date.now(),
+    default: Date.now().toLocaleTimeString("en-US", {
+      timeZone: "Asia/Kuala_Lumpur",
+    }),
   },
   type: String,
   sender: String,

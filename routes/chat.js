@@ -84,6 +84,7 @@ router.post("/register", async (req, res) => {
 
     const exist = await storeTimeSlot(doctorInfo, time, date);
     if (exist) {
+      console.log("exist");
       return res.status(404).send("Slot Taken");
     }
 

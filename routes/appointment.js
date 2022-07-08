@@ -201,7 +201,10 @@ router.delete("/:id", async (req, res) => {
     const activity = await new activityModal({
       doctorId,
       activityName: "Appointment Cancellation",
-      date: new Date().toLocaleTimeString("en-US", {
+      date: new Date().toLocaleDateString("en-US", {
+        timeZone: "Asia/Kuala_Lumpur",
+      }),
+      time: new Date().toLocaleTimeString("en-US", {
         timeZone: "Asia/Kuala_Lumpur",
       }),
       type: "cancel",

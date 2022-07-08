@@ -126,6 +126,9 @@ router.post("/register", async (req, res) => {
       date: new Date().toLocaleDateString("en-US", {
         timeZone: "Asia/Kuala_Lumpur",
       }),
+      time: new Date().toLocaleTimeString("en-US", {
+        timeZone: "Asia/Kuala_Lumpur",
+      }),
       sender: name,
       type: "appointment",
       email: email,

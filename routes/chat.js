@@ -122,6 +122,9 @@ router.post("/register", async (req, res) => {
     const activity = await new activityModal({
       doctorId: doctorInfo,
       activityName: "New Appointment",
+      date: new Date().toLocaleTimeString("en-US", {
+        timeZone: "Asia/Kuala_Lumpur",
+      }),
       sender: name,
       type: "appointment",
       email: email,

@@ -14,6 +14,22 @@ router.get("/create", (req, res) => {
   res.status(200).send(getTimeZones());
 });
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const user = await userModel.findById(req.body.userData);
+    if (!user) return res.status(404).send("No user");
+    user.reminder = user.reminder.filter((x, i) => {
+      if (i !== req.body.index) {
+        return x;
+      }
+    });
+    await user.save();
+    res.status(200).send("Success");
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+
 router.get("/:id/edit", async (req, res) => {
   const id = req.params.id;
   try {
